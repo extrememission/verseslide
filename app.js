@@ -34,7 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
       verseContainer.innerHTML = 'Error loading verses.';
     });
 
-  // Function to display the current verse
+  // Map click position to verse index and display corresponding verse
+  document.addEventListener('click', (event) => {
+    const clickPercentage = event.clientX / window.innerWidth; // Calculate click position
+    currentIndex = Math.floor(clickPercentage * bibleData.length); // Map click to verse index
+
+    showVerse(); // Show verse based on click position
+  });
+
   function showVerse() {
     if (bibleData.length === 0) return;
 
@@ -43,65 +50,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const bookName = bookNames[bookIndex];
     const verseText = `${verse.field[4]} <br> ${bookName} ${verse.field[2]}:${verse.field[3]}`;
 
+    // Update the verse container directly without transitions
+    verseContainer.innerHTML = ''; // Clear previous verse
     const verseBox = document.createElement('div');
     verseBox.classList.add('box');
     verseBox.innerHTML = verseText;
 
-    verseContainer.innerHTML = ''; // Clear previous verse
     verseContainer.appendChild(verseBox);
+
+    // Prepare next index, wrap around if at the end
+    currentIndex = (currentIndex + 1) % bibleData.length;
+
+    // Automatically show the next verse after a brief delay (1 second)
+    setTimeout(() => {
+      showVerse();
+    }, 1000); // After 1 second, show the next verse
   }
-
-  // Touch event variables for swipe detection
-  let touchStartX = 0;
-  let touchEndX = 0;
-
-  // Detect swipe gestures
-  document.addEventListener('touchstart', (event) => {
-    touchStartX = event.changedTouches[0].screenX; // Capture the starting position of the touch
-  });
-
-  document.addEventListener('touchend', (event) => {
-    touchEndX = event.changedTouches[0].screenX; // Capture the ending position of the touch
-
-    // If swipe distance is significant, detect the direction
-    if (touchStartX - touchEndX > 50) {
-      // Swipe left (next verse)
-      currentIndex = (currentIndex + 1) % bibleData.length;
-      showVerse();
-    } else if (touchEndX - touchStartX > 50) {
-      // Swipe right (previous verse)
-      currentIndex = (currentIndex - 1 + bibleData.length) % bibleData.length;
-      showVerse();
-    }
-  });
-
-  // For mouse-based swipe (desktop version)
-  let mouseStartX = 0;
-  let mouseEndX = 0;
-
-  document.addEventListener('mousedown', (event) => {
-    mouseStartX = event.clientX;
-  });
-
-  document.addEventListener('mouseup', (event) => {
-    mouseEndX = event.clientX;
-
-    if (mouseStartX - mouseEndX > 50) {
-      // Swipe left (next verse)
-      currentIndex = (currentIndex + 1) % bibleData.length;
-      showVerse();
-    } else if (mouseEndX - mouseStartX > 50) {
-      // Swipe right (previous verse)
-      currentIndex = (currentIndex - 1 + bibleData.length) % bibleData.length;
-      showVerse();
-    }
-  });
-
-  // Map click position to verse index and display corresponding verse
-  document.addEventListener('click', (event) => {
-    const clickPercentage = event.clientX / window.innerWidth; // Calculate click position
-    currentIndex = Math.floor(clickPercentage * bibleData.length); // Map click to verse index
-
-    showVerse(); // Show verse based on click position
-  });
 });
