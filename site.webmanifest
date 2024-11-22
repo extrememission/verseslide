@@ -1,7 +1,7 @@
 {
-  "name": "Bible Verse Display",
-  "short_name": "Bible",
-  "description": "A simple app to display Bible verses",
+  "name": "Verse Slide",
+  "short_name": "Verse Slide",
+  "description": "Verse Slide",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
