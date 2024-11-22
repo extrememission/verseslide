@@ -54,13 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
     verseBox.classList.add('box');
     verseBox.innerHTML = verseText;
 
-    // Prevent clicking while transition is happening
-    if (isTransitioning) {
-      return; // Exit early if a transition is already happening
-    }
-
-    isTransitioning = true; // Set transition flag to true
-
     // Add the verse box to the container with fade-in effect
     verseContainer.innerHTML = ''; // Clear previous verse
     verseContainer.appendChild(verseBox);
@@ -86,6 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isTransitioning) {
       return; // Ignore the click if a transition is in progress
     }
+
+    // Immediately disable transitions when a user clicks
+    isTransitioning = true;
 
     const screenWidth = window.innerWidth;  // Get the screen width
     const clickPosition = e.clientX;  // Get the click position relative to the screen
