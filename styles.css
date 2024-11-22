@@ -6,27 +6,42 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 100vh; /* Full height */
+  overflow: hidden;  /* Prevent scrolling */
+  touch-action: none; /* Prevent touch interactions like zoom and scroll */
 }
 
 #verse-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 10vw; /* Use viewport width for responsive font size */
+  font-size: 10vw; /* Fluid typography based on the width of the viewport */
   text-align: center;
   opacity: 0;
   transition: opacity 1s ease-in-out;
-  width: 100%;  /* Ensure container takes full available width */
-  height: 100%; /* Ensure container takes full available height */
-  min-width: 80%; /* Ensure there’s enough space for text */
-  min-height: 20%; /* Allow room for text, adjust as needed */
-  word-wrap: break-word; /* Allow text to wrap onto the next line */
-  padding: 0 5vw; /* Adds a bit of space on the sides */
+  width: 100%;  /* Full width */
+  height: 100%; /* Full height */
+  min-width: 80%; /* Prevents the text container from being too small */
+  min-height: 20%; /* Prevents the text from being too cramped */
+  word-wrap: break-word; /* Wraps long words onto the next line */
+  padding: 0 5vw; /* Adds space on the sides */
+  box-sizing: border-box; /* Ensures padding doesn’t affect container size */
 }
 
 .box {
   padding: 20px;
   background-color: black;
   cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  #verse-container {
+    font-size: 15vw; /* Adjusts font size on smaller screens */
+  }
+}
+
+@media (min-width: 768px) {
+  #verse-container {
+    font-size: 6vw; /* Adjusts font size on larger screens */
+  }
 }
