@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const totalVerses = 31102;  // Total verses in the Bible
   let isTransitioning = false;  // Flag to check if a transition is in progress
 
-  // Mapping of book numbers to book names (defining the book names array)
+  // Mapping of book numbers to book names
   const bookNames = [
     'Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy',
     'Joshua', 'Judges', 'Ruth', '1 Samuel', '2 Samuel',
@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Wait for the fade-out to complete before showing the next verse
       setTimeout(() => {
         isTransitioning = false; // Reset transition flag
+        showVerse(currentIndex);  // Show the next verse
       }, 1000); // 1-second delay to let fade-out happen before re-enabling clicks
     }, 3000); // 3 seconds per verse
   }
@@ -94,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const verseIndex = Math.floor(clickPercentage * totalVerses);
 
     currentIndex = verseIndex;
-    showVerse(currentIndex);
+    showVerse(currentIndex);  // Show the clicked verse
   });
 
   // Register the service worker for PWA functionality
