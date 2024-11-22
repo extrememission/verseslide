@@ -33,15 +33,3 @@ body {
   background-color: black;
   cursor: pointer;
 }
-
-@media (max-width: 768px) {
-  #verse-container {
-    font-size: 15vw; /* Adjusts font size on smaller screens */
-  }
-}
-
-@media (min-width: 768px) {
-  #verse-container {
-    font-size: 6vw; /* Adjusts font size on larger screens */
-  }
-}
