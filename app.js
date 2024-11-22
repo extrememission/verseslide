@@ -59,16 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
     verseContainer.appendChild(verseBox);
     verseContainer.style.opacity = 1; // Trigger fade-in
 
-    // After 3 seconds, trigger fade-out and set the next verse
+    // Set a fixed duration for displaying the verse before fading out
     setTimeout(() => {
       verseContainer.style.opacity = 0; // Trigger fade-out
-
-      // Move to the next verse (loop back to the start when reaching the end)
-      currentIndex = (currentIndex + 1) % bibleData.length;
 
       // Wait for the fade-out to complete before showing the next verse
       setTimeout(() => {
         isTransitioning = false; // Reset transition flag
+        // Move to the next verse (loop back to the start when reaching the end)
+        currentIndex = (currentIndex + 1) % bibleData.length;
         showVerse(currentIndex);  // Show the next verse
       }, 1000); // 1-second delay to let fade-out happen before re-enabling clicks
     }, 3000); // 3 seconds per verse
