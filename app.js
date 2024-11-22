@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bookName = bookNames[bookIndex];
     const verseText = `${verse.field[4]} <br> ${bookName} ${verse.field[2]}:${verse.field[3]}`;
 
-    // Update the verse container directly without transitions
+    // Clear previous verse and display the new one
     verseContainer.innerHTML = ''; // Clear previous verse
     const verseBox = document.createElement('div');
     verseBox.classList.add('box');
@@ -61,9 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Prepare next index, wrap around if at the end
     currentIndex = (currentIndex + 1) % bibleData.length;
 
-    // Automatically show the next verse after a brief delay (1 second)
+    // Automatically show the next verse after 1 second
     setTimeout(() => {
-      showVerse();
-    }, 1000); // After 1 second, show the next verse
+      showVerse(); // Show the next verse
+    }, 1000); // 1 second delay
   }
 });
