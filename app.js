@@ -63,17 +63,19 @@ document.addEventListener('DOMContentLoaded', () => {
     verseContainer.appendChild(verseBox);
     verseContainer.style.opacity = 1; // Trigger fade-in
 
+    // After 3 seconds, trigger fade-out and show next verse
     setTimeout(() => {
       verseContainer.style.opacity = 0; // Trigger fade-out
 
-      // Prepare next index, wrap around if at the end
-      currentIndex = (currentIndex + 1) % bibleData.length;
-
-      // After 1 second, show next verse
+      // After 1 second, update index and show next verse
       setTimeout(() => {
+        // Prepare next index, wrap around if at the end
+        currentIndex = (currentIndex + 1) % bibleData.length;
+
         isTransitioning = false;  // Allow next interaction
-        showVerse();
-      }, 1000); // After fade-out
+        showVerse();  // Show the next verse
+      }, 1000); // After fade-out (1 second)
+
     }, 3000); // Show verse for 3 seconds
   }
 });
