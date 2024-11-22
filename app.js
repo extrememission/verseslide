@@ -92,6 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     currentIndex = verseIndex;
     showVerse(currentIndex);  // Show the clicked verse
+
+    // Reset the transition flag after showing the verse (immediately after the click)
+    setTimeout(() => {
+      isTransitioning = false;
+    }, 3000);  // 3 seconds duration should be enough for the click to complete the transition
   });
 
   // Register the service worker for PWA functionality
