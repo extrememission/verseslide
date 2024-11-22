@@ -13,10 +13,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px;
+  font-size: 5vw; /* Fluid typography based on the width of the viewport */
   text-align: center;
   opacity: 0;
   transition: opacity 1s ease-in-out;
+  width: 100%;  /* Ensure container takes full available space */
+  height: 100%; /* Ensure container takes full available space */
 }
 
 .box {
@@ -25,4 +27,16 @@ body {
   border: 1.5px solid yellow;
   border-radius: 7px;
   cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  #verse-container {
+    font-size: 8vw; /* Adjusts the font size based on viewport width on smaller screens */
+  }
+}
+
+@media (min-width: 768px) {
+  #verse-container {
+    font-size: 3vw; /* Adjusts the font size based on viewport width on larger screens */
+  }
 }
