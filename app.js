@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => { 
+document.addEventListener('DOMContentLoaded', () => {
   const verseContainer = document.getElementById('verse-container');
   let bibleData = [];
   let currentIndex = 0;
