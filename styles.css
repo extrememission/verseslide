@@ -7,6 +7,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  overflow: hidden;  /* Prevent scrolling if the text overflows */
 }
 
 #verse-container {
@@ -19,6 +20,9 @@ body {
   transition: opacity 1s ease-in-out;
   width: 100%;  /* Ensure container takes full available space */
   height: 100%; /* Ensure container takes full available space */
+  overflow: hidden; /* Prevent text from overflowing */
+  flex-wrap: wrap; /* Allow text to wrap */
+  padding: 0 10vw; /* Adds a little margin on the sides to prevent the text from touching the edges */
 }
 
 .box {
