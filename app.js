@@ -69,6 +69,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3000); // 3 seconds per verse
   }
 
+  // Function to handle touch events
+  function handleTouch(event) {
+    const screenWidth = window.innerWidth;  // Get screen width
+    const touchX = event.changedTouches[0].clientX;  // Get the touch position
+    const touchPercentage = touchX / screenWidth;  // Calculate touch percentage across screen width
+
+    // Calculate the verse index based on touch position
+    let verseIndex;
+
+    if (touchPercentage < 0.5) {
+      // User touched on the left side (beginning of the Bible)
+      verseIndex = Math.floor(touchPercentage * bibleData.length);
+    } else {
+      // User touched on the right side (end of the Bible)
+      verseIndex = Math.floor((1 - touchPercentage) * bibleData.length);
+    }
+
+    // Ensure the verse index is within bounds and loops back around
+    verseIndex = (verseIndex + bibleData.length) % bibleData.length;
+
+    // Update currentIndex and show the selected verse
+    currentIndex = verseIndex;
+    showVerse();
+  }
+
+  // Register touch event listener
+  document.body.addEventListener('touchend', handleTouch);
+
   // Register the service worker for PWA functionality
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
