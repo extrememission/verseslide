@@ -7,38 +7,26 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  overflow: hidden;  /* Prevent scrolling if the text overflows */
 }
 
 #verse-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 5vw; /* Fluid typography based on the width of the viewport */
+  font-size: 10vw; /* Use viewport width for responsive font size */
   text-align: center;
   opacity: 0;
   transition: opacity 1s ease-in-out;
-  width: 100%;  /* Ensure container takes full available space */
-  height: 100%; /* Ensure container takes full available space */
-  overflow: hidden; /* Prevent text from overflowing */
-  flex-wrap: wrap; /* Allow text to wrap */
-  padding: 0 10vw; /* Adds a little margin on the sides to prevent the text from touching the edges */
+  width: 100%;  /* Ensure container takes full available width */
+  height: 100%; /* Ensure container takes full available height */
+  min-width: 80%; /* Ensure there’s enough space for text */
+  min-height: 20%; /* Allow room for text, adjust as needed */
+  word-wrap: break-word; /* Allow text to wrap onto the next line */
+  padding: 0 5vw; /* Adds a bit of space on the sides */
 }
 
 .box {
   padding: 20px;
   background-color: black;
   cursor: pointer;
-}
-
-@media (max-width: 768px) {
-  #verse-container {
-    font-size: 8vw; /* Adjusts the font size based on viewport width on smaller screens */
-  }
-}
-
-@media (min-width: 768px) {
-  #verse-container {
-    font-size: 3vw; /* Adjusts the font size based on viewport width on larger screens */
-  }
 }
