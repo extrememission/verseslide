@@ -11,21 +11,22 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:ital@0;1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css"> <!-- Your main stylesheet -->
-  <link rel="stylesheet" href="modal.css">  <!-- Stylesheet for the modal -->
-  <link rel="manifest" href="/site.webmanifest"> <!-- PWA Manifest -->
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="modal.css">
+  <link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
   <div id="app">
+    <!-- Search box for the app -->
     <div class="search-container">
       <input type="text" id="search" placeholder="search the scriptures">
     </div>
-    <div id="result-count"></div>
-    <div id="books"></div>
+
+    <!-- This is the container where verses will appear -->
+    <div id="verse-container"></div>
+    
   </div>
-  <div id="help-link">
-    <a href="https://extrememission.org/">extrememission.org</a>
-  </div>
+
   <!-- Modal for the splash image -->
   <div id="splash-modal">
     <div class="modal-content">
@@ -33,8 +34,12 @@
     </div>
   </div>
 
-  <!-- Include JavaScript files -->
-  <script src="app.js"></script>  <!-- Main JavaScript file -->
-  <script src="modal.js" defer></script>  <!-- JavaScript for modal -->
+  <!-- Link to external website -->
+  <div id="help-link">
+    <a href="https://extrememission.org/">extrememission.org</a>
+  </div>
+
+  <script src="app.js"></script>
+  <script src="modal.js" defer></script>
 </body>
 </html>
