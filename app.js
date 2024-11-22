@@ -61,11 +61,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     verseContainer.innerHTML = ''; // Clear previous verse
     verseContainer.appendChild(verseBox);
-    verseContainer.style.opacity = 1; // Trigger fade-in
+
+    // Trigger fade-in immediately
+    verseContainer.classList.remove('fade-out');
+    verseContainer.classList.add('fade-in');
 
     // After 3 seconds, trigger fade-out and show next verse
     setTimeout(() => {
-      verseContainer.style.opacity = 0; // Trigger fade-out
+      verseContainer.classList.remove('fade-in');
+      verseContainer.classList.add('fade-out');
 
       // After 1 second, update index and show next verse
       setTimeout(() => {
@@ -74,8 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         isTransitioning = false;  // Allow next interaction
         showVerse();  // Show the next verse
-      }, 1000); // After fade-out (1 second)
+      }, 1000); // Wait for fade-out to complete
 
-    }, 3000); // Show verse for 3 seconds
+    }, 3000); // Show verse for 3 seconds before fading out
   }
 });
