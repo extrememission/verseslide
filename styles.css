@@ -24,8 +24,6 @@ body {
 .box {
   padding: 20px;
   background-color: black;
-  border: 1.5px solid yellow;
-  border-radius: 7px;
   cursor: pointer;
 }
 
