@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   let bibleData = [];
   let currentIndex = 0;
-  let isTransitioning = false;
 
   const verseContainer = document.getElementById('verse-container');
   
@@ -35,18 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
       verseContainer.innerHTML = 'Error loading verses.';
     });
 
-  // Map click position to verse index and display corresponding verse
-  document.addEventListener('click', (event) => {
-    if (isTransitioning) return;  // Prevent interaction during transition
-
-    isTransitioning = true; // Block other transitions
-
-    const clickPercentage = event.clientX / window.innerWidth; // Calculate click position
-    currentIndex = Math.floor(clickPercentage * bibleData.length); // Map click to verse index
-
-    showVerse(); // Show verse based on click position
-  });
-
+  // Function to display the current verse
   function showVerse() {
     if (bibleData.length === 0) return;
 
@@ -61,25 +49,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
     verseContainer.innerHTML = ''; // Clear previous verse
     verseContainer.appendChild(verseBox);
-
-    // Trigger fade-in immediately
-    verseContainer.classList.remove('fade-out');
-    verseContainer.classList.add('fade-in');
-
-    // After 3 seconds, trigger fade-out and show next verse
-    setTimeout(() => {
-      verseContainer.classList.remove('fade-in');
-      verseContainer.classList.add('fade-out');
-
-      // After 1 second, update index and show next verse
-      setTimeout(() => {
-        // Prepare next index, wrap around if at the end
-        currentIndex = (currentIndex + 1) % bibleData.length;
-
-        isTransitioning = false;  // Allow next interaction
-        showVerse();  // Show the next verse
-      }, 1000); // Wait for fade-out to complete
-
-    }, 3000); // Show verse for 3 seconds before fading out
   }
+
+  // Touch event variables for swipe detection
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  // Detect swipe gestures
+  document.addEventListener('touchstart', (event) => {
+    touchStartX = event.changedTouches[0].screenX; // Capture the starting position of the touch
+  });
+
+  document.addEventListener('touchend', (event) => {
+    touchEndX = event.changedTouches[0].screenX; // Capture the ending position of the touch
+
+    // If swipe distance is significant, detect the direction
+    if (touchStartX - touchEndX > 50) {
+      // Swipe left (next verse)
+      currentIndex = (currentIndex + 1) % bibleData.length;
+      showVerse();
+    } else if (touchEndX - touchStartX > 50) {
+      // Swipe right (previous verse)
+      currentIndex = (currentIndex - 1 + bibleData.length) % bibleData.length;
+      showVerse();
+    }
+  });
+
+  // For mouse-based swipe (desktop version)
+  let mouseStartX = 0;
+  let mouseEndX = 0;
+
+  document.addEventListener('mousedown', (event) => {
+    mouseStartX = event.clientX;
+  });
+
+  document.addEventListener('mouseup', (event) => {
+    mouseEndX = event.clientX;
+
+    if (mouseStartX - mouseEndX > 50) {
+      // Swipe left (next verse)
+      currentIndex = (currentIndex + 1) % bibleData.length;
+      showVerse();
+    } else if (mouseEndX - mouseStartX > 50) {
+      // Swipe right (previous verse)
+      currentIndex = (currentIndex - 1 + bibleData.length) % bibleData.length;
+      showVerse();
+    }
+  });
+
+  // Map click position to verse index and display corresponding verse
+  document.addEventListener('click', (event) => {
+    const clickPercentage = event.clientX / window.innerWidth; // Calculate click position
+    currentIndex = Math.floor(clickPercentage * bibleData.length); // Map click to verse index
+
+    showVerse(); // Show verse based on click position
+  });
 });
