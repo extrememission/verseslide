@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     verseContainer.innerHTML = '';  // Clear previous verse
     verseContainer.appendChild(verseBox);
-    verseContainer.style.opacity = 1;
   }
 
   // Swipe handling logic
@@ -96,29 +95,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function swipeLeft() {
-    verseContainer.style.transition = 'transform 0.5s ease-in-out';
-    verseContainer.style.transform = 'translateX(-100%)';  // Slide out to the left
-
-    setTimeout(() => {
-      currentIndex = (currentIndex + 1) % bibleData.length;  // Go to next verse
-      showVerse(currentIndex);
-      verseContainer.style.transition = '';  // Reset transition
-      verseContainer.style.transform = '';  // Reset transform
-      isTransitioning = false;
-    }, 500);  // Wait for slide-out to finish
+    currentIndex = (currentIndex + 1) % bibleData.length;  // Go to next verse
+    showVerse(currentIndex);
+    isTransitioning = false;
   }
 
   function swipeRight() {
-    verseContainer.style.transition = 'transform 0.5s ease-in-out';
-    verseContainer.style.transform = 'translateX(100%)';  // Slide out to the right
-
-    setTimeout(() => {
-      currentIndex = (currentIndex - 1 + bibleData.length) % bibleData.length;  // Go to previous verse
-      showVerse(currentIndex);
-      verseContainer.style.transition = '';  // Reset transition
-      verseContainer.style.transform = '';  // Reset transform
-      isTransitioning = false;
-    }, 500);  // Wait for slide-out to finish
+    currentIndex = (currentIndex - 1 + bibleData.length) % bibleData.length;  // Go to previous verse
+    showVerse(currentIndex);
+    isTransitioning = false;
   }
 
   // Click and tap logic (to select a specific verse based on location)
