@@ -23,6 +23,46 @@ document.addEventListener('DOMContentLoaded', () => {
     'Revelation'
   ];
 
+  // Function to show an in-app notification
+  function showInAppNotification() {
+    const notification = document.createElement('div');
+    notification.style.position = "fixed";
+    notification.style.top = "10px";
+    notification.style.left = "50%";
+    notification.style.transform = "translateX(-50%)";
+    notification.style.backgroundColor = "rgba(0,0,0,0.7)";
+    notification.style.color = "white";
+    notification.style.padding = "10px";
+    notification.style.borderRadius = "5px";
+    notification.style.zIndex = "1000";
+    
+    notification.textContent = "Swipe left/right to change verses. Click to jump sections.";
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 5000);
+  }
+
+  // Request notification permission and show notification
+  if ('Notification' in window) {
+    Notification.requestPermission().then(permission => {
+      if (permission === "granted") {
+        new Notification("Navigation Tips", {
+          body: "Swipe left or right to change verses. Click to jump to a specific section.",
+        });
+      } else {
+        showInAppNotification(); // Show in-app notification if permission is denied
+      }
+    }).catch(() => {
+      showInAppNotification(); // Show in-app notification if there's an error
+    });
+  } else {
+    showInAppNotification(); // Fallback for browsers that don't support notifications
+  }
+
   // Fetch Bible data from the local JSON file
   fetch('data/kjv.json')
     .then(response => response.json())
@@ -32,13 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(error => {
       console.error('Error fetching Bible data:', error);
-      verseContainer.innerHTML = 'Error loading verses. Please try again later.';
+      verseContainer.innerHTML = "Error loading verses. Please try again later.";
     });
 
   // Function to show the verse based on a specific index
   function showVerse(index) {
     if (bibleData.length === 0) {
-      verseContainer.innerHTML = 'No verses found.';
+      verseContainer.innerHTML = "No verses found.";
       return;
     }
 
