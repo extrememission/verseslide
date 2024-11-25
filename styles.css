@@ -17,8 +17,6 @@ body {
   align-items: center;
   font-size: min(10vw, 10vh); /* Fluid font size based on viewport width or height */
   text-align: center;
-  opacity: 0;
-  transition: opacity 1s ease-in-out; /* Fade-in effect */
   width: 100%;  /* Full width */
   height: 100%; /* Full height */
   min-width: 80%; /* Prevents the text container from being too small */
