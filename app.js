@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const verseContainer = document.getElementById('verse-container');
   let bibleData = [];
   let currentIndex = 0;
+  const totalVerses = 31102;  // Total verses in the Bible
+  let isTransitioning = false;  // Flag to check if a transition is in progress
 
-  const verseContainer = document.getElementById('verse-container');
-  
-  // Array of book names, already defined for the Bible.
+  // Mapping of book numbers to book names
   const bookNames = [
     'Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy',
     'Joshua', 'Judges', 'Ruth', '1 Samuel', '2 Samuel',
@@ -27,43 +28,117 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(response => response.json())
     .then(data => {
       bibleData = data.resultset.row;
-      showVerse(); // Show the first verse once data is loaded
+      showVerse(currentIndex); // Show the first verse once data is loaded
     })
     .catch(error => {
       console.error('Error fetching Bible data:', error);
-      verseContainer.innerHTML = 'Error loading verses.';
+      verseContainer.innerHTML = 'Error loading verses. Please try again later.';
     });
 
-  // Map click position to verse index and display corresponding verse
-  document.addEventListener('click', (event) => {
-    const clickPercentage = event.clientX / window.innerWidth; // Calculate click position
-    currentIndex = Math.floor(clickPercentage * bibleData.length); // Map click to verse index
+  // Function to show the verse based on a specific index
+  function showVerse(index) {
+    if (bibleData.length === 0) {
+      verseContainer.innerHTML = 'No verses found.';
+      return;
+    }
 
-    showVerse(); // Show verse based on click position
-  });
+    // Get the current verse data
+    const verse = bibleData[index];
 
-  function showVerse() {
-    if (bibleData.length === 0) return;
-
-    const verse = bibleData[currentIndex];
-    const bookIndex = verse.field[1] - 1;  // The book index from the Bible data (adjusted to 0-based)
-    const bookName = bookNames[bookIndex];
+    // Get the book name from the book number (field[1] is the book number)
+    const bookName = bookNames[verse.field[1] - 1];  // Adjusting for zero-based index
     const verseText = `${verse.field[4]} <br> ${bookName} ${verse.field[2]}:${verse.field[3]}`;
 
-    // Clear previous verse and display the new one
-    verseContainer.innerHTML = ''; // Clear previous verse
+    // Create a verse box and set its content
     const verseBox = document.createElement('div');
     verseBox.classList.add('box');
     verseBox.innerHTML = verseText;
 
+    // Clear the verse container and add the new verse box
+    verseContainer.innerHTML = '';
     verseContainer.appendChild(verseBox);
 
-    // Prepare next index, wrap around if at the end
-    currentIndex = (currentIndex + 1) % bibleData.length;
+    // Apply transition for sliding the verse
+    verseContainer.style.transition = 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out';
+    verseContainer.style.transform = 'translateX(0)'; // Start at the normal position
+    verseContainer.style.opacity = '1'; // Make it visible
+  }
 
-    // Automatically show the next verse after 1 second
+  // Handle swipe actions (left or right)
+  let startX = 0;
+  let isSwiping = false;
+
+  verseContainer.addEventListener('mousedown', (e) => {
+    if (isTransitioning) return; // Ignore if transition is in progress
+    isSwiping = true;
+    startX = e.clientX; // Store the starting X position of the swipe
+  });
+
+  verseContainer.addEventListener('mousemove', (e) => {
+    if (!isSwiping) return;
+
+    // Get the distance moved during swipe
+    const diffX = e.clientX - startX;
+    verseContainer.style.transform = `translateX(${diffX}px)`; // Move the verse with the drag
+  });
+
+  verseContainer.addEventListener('mouseup', (e) => {
+    if (!isSwiping) return;
+
+    isSwiping = false;
+    const diffX = e.clientX - startX; // Calculate the total movement
+
+    // If the swipe is significant enough, move to the next verse
+    if (diffX > 100) {
+      swipeRight(); // Swipe Right -> Next verse
+    } else if (diffX < -100) {
+      swipeLeft(); // Swipe Left -> Previous verse
+    } else {
+      // If the swipe was small, reset position
+      verseContainer.style.transform = 'translateX(0)';
+    }
+  });
+
+  function swipeLeft() {
+    if (isTransitioning) return; // Prevent multiple transitions
+    isTransitioning = true;
+    verseContainer.style.transition = 'transform 0.5s ease-in-out'; // Set transition for slide
+
+    // Slide the verse out to the left
+    verseContainer.style.transform = 'translateX(-100%)';
+
+    // After slide, show the next verse (previous verse in the array)
     setTimeout(() => {
-      showVerse(); // Show the next verse
-    }, 1000); // 1 second delay
+      currentIndex = (currentIndex + 1) % bibleData.length; // Move to next verse
+      showVerse(currentIndex);
+    }, 500); // Wait for the slide transition to finish
+  }
+
+  function swipeRight() {
+    if (isTransitioning) return; // Prevent multiple transitions
+    isTransitioning = true;
+    verseContainer.style.transition = 'transform 0.5s ease-in-out'; // Set transition for slide
+
+    // Slide the verse out to the right
+    verseContainer.style.transform = 'translateX(100%)';
+
+    // After slide, show the previous verse (previous verse in the array)
+    setTimeout(() => {
+      currentIndex = (currentIndex - 1 + bibleData.length) % bibleData.length; // Move to previous verse
+      showVerse(currentIndex);
+    }, 500); // Wait for the slide transition to finish
+  }
+
+  // Register the service worker for PWA functionality
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(registration => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch(error => {
+          console.log('Service Worker registration failed:', error);
+        });
+    });
   }
 });
