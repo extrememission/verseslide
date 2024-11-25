@@ -26,15 +26,6 @@ body {
   box-sizing: border-box; /* Ensures padding doesn’t affect container size */
 }
 
-.fade-in {
-  opacity: 1;
-}
-
-.fade-out {
-  opacity: 0;
-  transition: opacity 1s ease-in-out; /* Smooth fade-out */
-}
-
 .box {
   padding: 20px;
   background-color: black;
