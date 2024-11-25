@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const totalVerses = 31102;  // Total verses in the Bible
   let isTransitioning = false;  // Flag to check if a transition is in progress
 
-  // Mapping of book numbers to book names
+  // Mapping of book numbers to book names (for verse display)
   const bookNames = [
     'Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy',
     'Joshua', 'Judges', 'Ruth', '1 Samuel', '2 Samuel',
@@ -42,103 +42,97 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Get the current verse data
     const verse = bibleData[index];
-
-    // Get the book name from the book number (field[1] is the book number)
-    const bookName = bookNames[verse.field[1] - 1];  // Adjusting for zero-based index
+    const bookName = bookNames[verse.field[1] - 1];
     const verseText = `${verse.field[4]} <br> ${bookName} ${verse.field[2]}:${verse.field[3]}`;
 
-    // Create a verse box and set its content
     const verseBox = document.createElement('div');
     verseBox.classList.add('box');
     verseBox.innerHTML = verseText;
 
-    // Clear the verse container and add the new verse box
-    verseContainer.innerHTML = '';
+    verseContainer.innerHTML = '';  // Clear previous verse
     verseContainer.appendChild(verseBox);
-
-    // Apply transition for sliding the verse
-    verseContainer.style.transition = 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out';
-    verseContainer.style.transform = 'translateX(0)'; // Start at the normal position
-    verseContainer.style.opacity = '1'; // Make it visible
+    verseContainer.style.opacity = 1;
   }
 
-  // Handle swipe actions (left or right)
-  let startX = 0;
-  let isSwiping = false;
+  // Swipe handling logic
+  let touchStartX = 0;
+  let touchEndX = 0;
 
-  verseContainer.addEventListener('mousedown', (e) => {
-    if (isTransitioning) return; // Ignore if transition is in progress
-    isSwiping = true;
-    startX = e.clientX; // Store the starting X position of the swipe
+  verseContainer.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
   });
 
-  verseContainer.addEventListener('mousemove', (e) => {
-    if (!isSwiping) return;
+  verseContainer.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  });
 
-    // Get the distance moved during swipe
-    const diffX = e.clientX - startX;
-    verseContainer.style.transform = `translateX(${diffX}px)`; // Move the verse with the drag
+  // For mouse swipe on desktop
+  verseContainer.addEventListener('mousedown', (e) => {
+    touchStartX = e.screenX;
   });
 
   verseContainer.addEventListener('mouseup', (e) => {
-    if (!isSwiping) return;
-
-    isSwiping = false;
-    const diffX = e.clientX - startX; // Calculate the total movement
-
-    // If the swipe is significant enough, move to the next verse
-    if (diffX > 100) {
-      swipeRight(); // Swipe Right -> Next verse
-    } else if (diffX < -100) {
-      swipeLeft(); // Swipe Left -> Previous verse
-    } else {
-      // If the swipe was small, reset position
-      verseContainer.style.transform = 'translateX(0)';
-    }
+    touchEndX = e.screenX;
+    handleSwipe();
   });
 
+  // Swipe detection logic
+  function handleSwipe() {
+    if (Math.abs(touchEndX - touchStartX) < 100) return;  // Ignore small swipes
+
+    if (touchEndX < touchStartX) {
+      // Swipe left, go to the next verse
+      if (isTransitioning) return;
+      isTransitioning = true;
+      swipeLeft();
+    } else {
+      // Swipe right, go to the previous verse
+      if (isTransitioning) return;
+      isTransitioning = true;
+      swipeRight();
+    }
+  }
+
   function swipeLeft() {
-    if (isTransitioning) return; // Prevent multiple transitions
-    isTransitioning = true;
-    verseContainer.style.transition = 'transform 0.5s ease-in-out'; // Set transition for slide
+    verseContainer.style.transition = 'transform 0.5s ease-in-out';
+    verseContainer.style.transform = 'translateX(-100%)';  // Slide out to the left
 
-    // Slide the verse out to the left
-    verseContainer.style.transform = 'translateX(-100%)';
-
-    // After slide, show the next verse (previous verse in the array)
     setTimeout(() => {
-      currentIndex = (currentIndex + 1) % bibleData.length; // Move to next verse
+      currentIndex = (currentIndex + 1) % bibleData.length;  // Go to next verse
       showVerse(currentIndex);
-    }, 500); // Wait for the slide transition to finish
+      verseContainer.style.transition = '';  // Reset transition
+      verseContainer.style.transform = '';  // Reset transform
+      isTransitioning = false;
+    }, 500);  // Wait for slide-out to finish
   }
 
   function swipeRight() {
-    if (isTransitioning) return; // Prevent multiple transitions
-    isTransitioning = true;
-    verseContainer.style.transition = 'transform 0.5s ease-in-out'; // Set transition for slide
+    verseContainer.style.transition = 'transform 0.5s ease-in-out';
+    verseContainer.style.transform = 'translateX(100%)';  // Slide out to the right
 
-    // Slide the verse out to the right
-    verseContainer.style.transform = 'translateX(100%)';
-
-    // After slide, show the previous verse (previous verse in the array)
     setTimeout(() => {
-      currentIndex = (currentIndex - 1 + bibleData.length) % bibleData.length; // Move to previous verse
+      currentIndex = (currentIndex - 1 + bibleData.length) % bibleData.length;  // Go to previous verse
       showVerse(currentIndex);
-    }, 500); // Wait for the slide transition to finish
+      verseContainer.style.transition = '';  // Reset transition
+      verseContainer.style.transform = '';  // Reset transform
+      isTransitioning = false;
+    }, 500);  // Wait for slide-out to finish
   }
 
-  // Register the service worker for PWA functionality
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(registration => {
-          console.log('Service Worker registered with scope:', registration.scope);
-        })
-        .catch(error => {
-          console.log('Service Worker registration failed:', error);
-        });
-    });
-  }
+  // Click and tap logic (to select a specific verse based on location)
+  verseContainer.addEventListener('click', (e) => {
+    if (isTransitioning) return; // Prevent transition if in progress
+
+    // Calculate the click position relative to the screen width
+    const clickPosition = e.clientX;
+    const clickPercentage = clickPosition / window.innerWidth;
+
+    // Calculate the verse index based on click position
+    const verseIndex = Math.floor(clickPercentage * totalVerses);
+
+    currentIndex = verseIndex;
+    showVerse(currentIndex);  // Show the clicked verse
+  });
 });
