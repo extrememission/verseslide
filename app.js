@@ -5,6 +5,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const totalVerses = 31102;  // Total verses in the Bible
   let isTransitioning = false;  // Flag to check if a transition is in progress
 
+  // Mapping of book abbreviations
+  const bookAbbreviations = [
+    'Ge', 'Ex', 'Le', 'Nu', 'De', 'Jo', 'Ju', 'Ru', '1 Sa', '2 Sa',
+    '1 Ki', '2 Ki', '1 Ch', '2 Ch', 'Ez', 'Ne', 'Es', 'Jo', 'Ps', 'Pr',
+    'Ec', 'So', 'Is', 'Je', 'La', 'Ez', 'Da', 'Ho', 'Jo', 'Am', 'Ob',
+    'Jo', 'Mi', 'Na', 'Ha', 'Ze', 'Ha', 'Ze', 'Ma', 'Ma', 'Lu', 'Jo',
+    'Ac', 'Ro', '1 Co', '2 Co', 'Ga', 'Ep', 'Ph', 'Co', '1 Th', '2 Th',
+    '1 Ti', '2 Ti', 'Ti', 'Ph', 'He', 'Ja', '1 Pe', '2 Pe', '1 Jo',
+    '2 Jo', '3 Jo', 'Ju', 'Re'
+  ];
+
   // Mapping of book numbers to book names (for verse display)
   const bookNames = [
     'Genesis', 'Exodus', 'Leviticus', 'Numbers', 'Deuteronomy',
@@ -23,29 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     'Revelation'
   ];
 
-  // Function to show an in-app notification
-  function showInAppNotification() {
-    const notification = document.createElement('div');
-    notification.style.position = "fixed";
-    notification.style.top = "10px";
-    notification.style.left = "50%";
-    notification.style.transform = "translateX(-50%)";
-    notification.style.backgroundColor = "rgba(0,0,0,0.7)";
-    notification.style.color = "white";
-    notification.style.padding = "10px";
-    notification.style.borderRadius = "5px";
-    notification.style.zIndex = "1000";
-    
-    notification.textContent = "Swipe left/right to change verses. Click to jump sections.";
-    
-    document.body.appendChild(notification);
-    
-    // Auto-remove after 5 seconds
-    setTimeout(() => {
-      document.body.removeChild(notification);
-    }, 5000);
-  }
-
   // Request notification permission and show notification
   if ('Notification' in window) {
     Notification.requestPermission().then(permission => {
@@ -53,14 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
         new Notification("Navigation Tips", {
           body: "Swipe left or right to change verses. Click to jump to a specific section.",
         });
-      } else {
-        showInAppNotification(); // Show in-app notification if permission is denied
       }
-    }).catch(() => {
-      showInAppNotification(); // Show in-app notification if there's an error
     });
-  } else {
-    showInAppNotification(); // Fallback for browsers that don't support notifications
   }
 
   // Fetch Bible data from the local JSON file
@@ -68,14 +50,83 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(response => response.json())
     .then(data => {
       bibleData = data.resultset.row;
-      showVerse(currentIndex); // Show the first verse once data is loaded
+      showBookGrid();  // Show the grid of book abbreviations when data is loaded
     })
     .catch(error => {
       console.error('Error fetching Bible data:', error);
       verseContainer.innerHTML = "Error loading verses. Please try again later.";
     });
 
-  // Function to show the verse based on a specific index
+  // Function to show the book grid
+  function showBookGrid() {
+    verseContainer.innerHTML = '';  // Clear previous content
+
+    // Create the grid container
+    const gridContainer = document.createElement('div');
+    gridContainer.classList.add('grid-container');
+    verseContainer.appendChild(gridContainer);
+
+    // Determine the number of columns based on orientation
+    const isPortrait = window.innerHeight > window.innerWidth;
+    const columns = isPortrait ? 6 : 11;
+    gridContainer.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+
+    // Create the book abbreviation buttons
+    bookAbbreviations.forEach((abbr, index) => {
+      const bookButton = document.createElement('button');
+      bookButton.textContent = abbr;
+      bookButton.classList.add('book-button');
+      bookButton.addEventListener('click', () => loadChapters(index));
+      gridContainer.appendChild(bookButton);
+    });
+  }
+
+  // Function to load the chapters for a selected book
+  function loadChapters(bookIndex) {
+    verseContainer.innerHTML = '';  // Clear previous content
+
+    // Get the number of chapters for the selected book
+    const bookName = bookNames[bookIndex];
+    const chapters = getChaptersForBook(bookName);  // Assume this function gives you the chapters data
+
+    // Create the grid container for chapters
+    const gridContainer = document.createElement('div');
+    gridContainer.classList.add('grid-container');
+    verseContainer.appendChild(gridContainer);
+
+    // Determine the number of columns based on orientation
+    const isPortrait = window.innerHeight > window.innerWidth;
+    const columns = isPortrait ? 6 : 11;
+    gridContainer.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+
+    // Create chapter buttons
+    chapters.forEach(chapter => {
+      const chapterButton = document.createElement('button');
+      chapterButton.textContent = chapter;
+      chapterButton.classList.add('chapter-button');
+      chapterButton.addEventListener('click', () => loadChapterContent(bookName, chapter));
+      gridContainer.appendChild(chapterButton);
+    });
+  }
+
+  // Dummy function to get chapters for a book (replace with actual data)
+  function getChaptersForBook(bookName) {
+    // Replace with real data or logic to fetch chapters for each book
+    return Array.from({ length: 10 }, (_, i) => i + 1);  // Example: 10 chapters per book
+  }
+
+  // Function to load the chapter content (verses) for the selected chapter
+  function loadChapterContent(bookName, chapter) {
+    verseContainer.innerHTML = `Loading verses from ${bookName} Chapter ${chapter}...`;
+
+    // Fetch the verses for the selected book and chapter
+    const chapterVerses = bibleData.filter(verse => verse.field[1] === bookNames.indexOf(bookName) + 1 && verse.field[2] === chapter);
+
+    // Show the first verse as an example
+    showVerse(chapterVerses[0].field[0]);
+  }
+
+  // Function to show a verse (similar to your original `showVerse` function)
   function showVerse(index) {
     if (bibleData.length === 0) {
       verseContainer.innerHTML = "No verses found.";
@@ -93,71 +144,4 @@ document.addEventListener('DOMContentLoaded', () => {
     verseContainer.innerHTML = '';  // Clear previous verse
     verseContainer.appendChild(verseBox);
   }
-
-  // Swipe handling logic
-  let touchStartX = 0;
-  let touchEndX = 0;
-
-  verseContainer.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-  });
-
-  verseContainer.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-  });
-
-  // For mouse swipe on desktop
-  verseContainer.addEventListener('mousedown', (e) => {
-    touchStartX = e.screenX;
-  });
-
-  verseContainer.addEventListener('mouseup', (e) => {
-    touchEndX = e.screenX;
-    handleSwipe();
-  });
-
-  // Swipe detection logic
-  function handleSwipe() {
-    if (Math.abs(touchEndX - touchStartX) < 100) return;  // Ignore small swipes
-
-    if (touchEndX < touchStartX) {
-      // Swipe left, go to the next verse
-      if (isTransitioning) return;
-      isTransitioning = true;
-      swipeLeft();
-    } else {
-      // Swipe right, go to the previous verse
-      if (isTransitioning) return;
-      isTransitioning = true;
-      swipeRight();
-    }
-  }
-
-  function swipeLeft() {
-    currentIndex = (currentIndex + 1) % bibleData.length;  // Go to next verse
-    showVerse(currentIndex);
-    isTransitioning = false;
-  }
-
-  function swipeRight() {
-    currentIndex = (currentIndex - 1 + bibleData.length) % bibleData.length;  // Go to previous verse
-    showVerse(currentIndex);
-    isTransitioning = false;
-  }
-
-  // Click and tap logic (to select a specific verse based on location)
-  verseContainer.addEventListener('click', (e) => {
-    if (isTransitioning) return; // Prevent transition if in progress
-
-    // Calculate the click position relative to the screen width
-    const clickPosition = e.clientX;
-    const clickPercentage = clickPosition / window.innerWidth;
-
-    // Calculate the verse index based on click position
-    const verseIndex = Math.floor(clickPercentage * totalVerses);
-
-    currentIndex = verseIndex;
-    showVerse(currentIndex);  // Show the clicked verse
-  });
 });
